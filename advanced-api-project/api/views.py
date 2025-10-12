@@ -1,3 +1,37 @@
-from django.shortcuts import render
+from rest_framework import generics, permissions
+from .models import Book
+from .serializers import BookSerializer
 
-# Create your views here.
+"""
+This module defines views that handle CRUD operations for the Book model
+using Django REST Framework generic views.
+"""
+
+class BookListCreateView(generics.ListCreateAPIView):
+    """
+    Handles listing all books and creating new books.
+    - GET: Returns a list of all Book objects.
+    - POST: Creates a new Book (authenticated users only).
+    """
+    queryset = Book.objects.all()
+    serializer_class = BookSerializer
+
+    def get_permissions(self):
+        if self.request.method == 'POST':
+            return [permissions.IsAuthenticated()]
+        return [permissions.AllowAny()]
+
+
+class BookDetailView(generics.RetrieveUpdateDestroyAPIView):
+    """
+    Handles retrieving, updating, or deleting a specific Book by its ID.
+    - GET: Anyone can view.
+    - PUT/PATCH/DELETE: Only authenticated users can modify or delete.
+    """
+    queryset = Book.objects.all()
+    serializer_class = BookSerializer
+
+    def get_permissions(self):
+        if self.request.method in ['PUT', 'PATCH', 'DELETE']:
+            return [permissions.IsAuthenticated()]
+        return [permissions.AllowAny()]
