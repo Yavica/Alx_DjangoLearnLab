@@ -2,19 +2,11 @@ from rest_framework import generics, permissions
 from .models import Book
 from .serializers import BookSerializer
 
-"""
-This module defines views that handle CRUD operations for the Book model
-using Django REST Framework generic views.
-"""
-
-class BookListCreateView(generics.ListCreateAPIView):
-    """
-    Handles listing all books and creating new books.
-    - GET: Returns a list of all Book objects.
-    - POST: Creates a new Book (authenticated users only).
-    """
+class BookListCreate(generics.ListCreateAPIView):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
 
     def get_permissions(self):
         if self.request.method == 'POST':
